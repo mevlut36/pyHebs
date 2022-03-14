@@ -1,0 +1,12 @@
+resources:
+  money: 1000
+  water: 100
+  volt: 120
+
+prison:
+  detenus: 2
+  gardiens: 5
+  cuisinier: 2
+  agent: 3
+  cellules: 1
+  max-cellules: 8
