@@ -6,3 +6,5 @@ List of commands for now:
            - /help : Check commands list
            - /infoprison | /ip : Check information about your prison
            - /up-prison : Upgrade something about your prison
+
+![image info](image_57.png)
