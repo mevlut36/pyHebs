@@ -56,9 +56,9 @@ def getDataYML(key, value):
 def pay(price):
     file = open(src_data, 'r')
     data = yaml.load(file, Loader=Loader)
-    data['resources']['money'] += price
+    data['resources']['money'] -= price
     with open(src_data, 'w') as yaml_file:
-        yaml_file.write(yaml.dump(data, default_flow_style=False))
+        yaml_file.write(yaml.dump(data))
 
 
 def earn(price):
@@ -66,7 +66,7 @@ def earn(price):
     data = yaml.load(file, Loader=Loader)
     data['resources']['money'] += price
     with open(src_data, 'w') as yaml_file:
-        yaml_file.write(yaml.dump(data, default_flow_style=False))
+        yaml_file.write(yaml.dump(data))
 
 
 def getResources():
@@ -96,7 +96,7 @@ def upgradePrison():
     if a == "1":
         ab = input("Quel cellule ? ({0})".format(str(getDataYML('prison', 'cellules'))))
         if ab == "1":
-            abc = input("Le prix est de 10€. Vous avez {0}, souhaitez vous l'améliorer ? (y/n)")
+            abc = input(f"Le prix est de 10€. Vous avez {str(getDataYML('resources', 'money'))}€, souhaitez vous l'améliorer ? (y/n)")
             if abc == "y" or abc == "yes":
                 pay(10)
 
