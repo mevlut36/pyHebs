@@ -1,5 +1,7 @@
+import os
 import time
 import yaml
+from yaml import Loader
 import threading
 
 running = True
@@ -9,6 +11,8 @@ seconds = 0
 
 impot = 160
 revenue_par_detenus = 80
+
+src_data = "data/data.yml"
 
 
 def mevTimer():
@@ -50,15 +54,19 @@ def getDataYML(key, value):
 
 
 def pay(price):
-    with open("data/data.yml", "w") as file:
-        data = yaml.safe_load(file)
-        return data["resources"]["money"] - price
+    file = open(src_data, 'r')
+    data = yaml.load(file, Loader=Loader)
+    data['resources']['money'] += price
+    with open(src_data, 'w') as yaml_file:
+        yaml_file.write(yaml.dump(data, default_flow_style=False))
 
 
 def earn(price):
-    with open("data/data.yml", "w") as file:
-        data = yaml.safe_load(file)
-        return data["resources"]["money"] + price
+    file = open(src_data, 'r')
+    data = yaml.load(file, Loader=Loader)
+    data['resources']['money'] += price
+    with open(src_data, 'w') as yaml_file:
+        yaml_file.write(yaml.dump(data, default_flow_style=False))
 
 
 def getResources():
@@ -88,7 +96,7 @@ def upgradePrison():
     if a == "1":
         ab = input("Quel cellule ? ({0})".format(str(getDataYML('prison', 'cellules'))))
         if ab == "1":
-            abc = "Le prix est de 10€. Vous avez {0}, souhaitez vous l'améliorer ? (y/n)"
+            abc = input("Le prix est de 10€. Vous avez {0}, souhaitez vous l'améliorer ? (y/n)")
             if abc == "y" or abc == "yes":
                 pay(10)
 
@@ -102,9 +110,30 @@ def helpCmd():
            "<------------------->"
 
 
+def init_yml():
+    if os.path.getsize("data/data.yml") == 0:
+        f = open("data/data.yml", "a")
+        f.write("resources:\n"
+                "   money: 2000\n"
+                "   water: 100\n"
+                "   volt: 120\n"
+                "prison:\n"
+                "   detenus: 2\n"
+                "   gardiens: 5\n"
+                "   cuisinier: 2\n"
+                "   agent: 3\n"
+                "   cellules: 1\n"
+                "   max-cellules: 8\n")
+        return "YML file created"
+
+
 if __name__ == '__main__':
     timer_thread = threading.Thread(target=mevTimer)
     timer_thread.start()
+    if os.path.getsize("data/data.yml") == 0:
+        print(init_yml())
+    else:
+        print("YML file loaded")
     while running:
         cmd = input(str(getDataYML('resources', "money")) + "€ | " + str(getDataYML('resources', "water")) + "L | "
                     + str(getDataYML('resources', "volt")) + "V | [" + str(hour) + ":" + str(minute) + "] |" + routine() + "|" + " #>")
@@ -114,3 +143,5 @@ if __name__ == '__main__':
             print(helpCmd())
         if cmd == "/infoprison" or cmd == "/ip":
             print(getInfoPrison())
+        if cmd == "/up-prison" or cmd == "/up":
+            print(upgradePrison())
