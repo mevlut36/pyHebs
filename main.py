@@ -105,6 +105,7 @@ def upgradePrison():
                         f"souhaitez vous l'améliorer ? (y/n)")
             if abc == "y" or abc == "yes":
                 pay(10)
+                return "Amélioration effectuer"
 
 
 def helpCmd():
@@ -152,3 +153,5 @@ if __name__ == '__main__':
             print(getInfoPrison())
         if cmd == "/up-prison" or cmd == "/up":
             print(upgradePrison())
+        else:
+            print("Command not found, try /help")
