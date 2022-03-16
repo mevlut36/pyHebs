@@ -5,9 +5,7 @@ from yaml import Loader
 import threading
 
 running = True
-hour = 11
-minute = 30
-seconds = 0
+hour, minute, seconds = 11, 30, 0
 
 impot = 160
 revenue_par_detenus = 80
@@ -16,20 +14,27 @@ src_data = "data/data.yml"
 
 
 def mevTimer():
-    global seconds
-    global minute
-    global hour
+    file = open(src_data, 'r')
+    data = yaml.load(file, Loader=Loader)
     while True:
-        seconds += 1
+        data['time']['seconds'] += 1
         time.sleep(0.10)
-        if seconds > 59:
-            minute += 1
-            seconds = 0
-        elif minute > 59:
-            hour += 1
-            minute = 0
-        elif hour > 23:
-            hour = 0
+        with open(src_data, 'w') as yaml_file:
+            yaml_file.write(yaml.dump(data))
+        if data['time']['seconds'] > 59:
+            data['time']['minute'] += 1
+            data['time']['seconds'] = 0
+            with open(src_data, 'w') as yaml_file:
+                yaml_file.write(yaml.dump(data))
+        elif data['time']['minute'] > 59:
+            data['time']['hour'] += 1
+            data['time']['minute'] = 0
+            with open(src_data, 'w') as yaml_file:
+                yaml_file.write(yaml.dump(data))
+        elif data['time']['hour'] > 23:
+            data['time']['hour'] = 0
+            with open(src_data, 'w') as yaml_file:
+                yaml_file.write(yaml.dump(data))
         time.sleep(60)
         # print('[' + str(hour) + ':' + str(minute) + ']')
 
@@ -86,8 +91,8 @@ def getInfoPrison():
     if a == '1':
         return "Nombre de prisonniers: " + str(getDataYML('prison', 'detenus'))
     elif a == '2':
-        return "Cellules total: " + str(getDataYML('prison', 'cellules'))\
-               + '/' +\
+        return "Cellules total: " + str(getDataYML('prison', 'cellules')) \
+               + '/' + \
                str(getDataYML('prison', 'max-cellules'))
 
 
@@ -95,8 +100,9 @@ def upgradePrison():
     a = input("Que souhaitez-vous améliorer ? (Ajouter une cellule = 1 / Infirmerie = 2 / Sanitaire = 3)")
     if a == "1":
         ab = input("Quel cellule ? ({0})".format(str(getDataYML('prison', 'cellules'))))
-        if ab == "1":
-            abc = input(f"Le prix est de 10€. Vous avez {str(getDataYML('resources', 'money'))}€, souhaitez vous l'améliorer ? (y/n)")
+        if ab == str(getDataYML('prison', 'cellules')):
+            abc = input(f"Le prix est de 10€. Vous avez {str(getDataYML('resources', 'money'))}€,"
+                        f"souhaitez vous l'améliorer ? (y/n)")
             if abc == "y" or abc == "yes":
                 pay(10)
 
@@ -136,7 +142,8 @@ if __name__ == '__main__':
         print("YML file loaded")
     while running:
         cmd = input(str(getDataYML('resources', "money")) + "€ | " + str(getDataYML('resources', "water")) + "L | "
-                    + str(getDataYML('resources', "volt")) + "V | [" + str(hour) + ":" + str(minute) + "] |" + routine() + "|" + " #>")
+                    + str(getDataYML('resources', "volt")) + "V | [" + str(getDataYML('time', 'hour')) + ":"
+                    + str(getDataYML('time', 'minute')) + "] |" + routine() + "|" + " #>")
         if cmd == "/res" or cmd == "/resources" or cmd == "/rs":
             print(getResources())
         if cmd == "/help":
