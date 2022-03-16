@@ -1,12 +1,15 @@
-resources:
-  money: 1000
-  water: 100
-  volt: 120
-
 prison:
-  detenus: 2
-  gardiens: 5
-  cuisinier: 2
   agent: 3
   cellules: 1
+  cuisinier: 2
+  detenus: 2
+  gardiens: 5
   max-cellules: 8
+resources:
+  money: 960
+  volt: 120
+  water: 100
+time:
+  hour: 20
+  minute: 31
+  seconds: 0
