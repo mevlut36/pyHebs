@@ -1,15 +1,18 @@
 prison:
-  agent: 3
-  cellules: 1
-  cuisinier: 2
+  agents: 3
+  cellules: 4
+  cuisiniers: 2
   detenus: 2
-  gardiens: 5
+  gardiens: 3
+  max-agents: 6
   max-cellules: 8
+  max-cuisiniers: 8
+  max-gardiens: 20
 resources:
-  money: 960
+  money: 17890
   volt: 120
   water: 100
 time:
   hour: 20
   minute: 31
-  seconds: 0
+  seconds: 10
