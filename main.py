@@ -3,6 +3,7 @@ import time
 import yaml
 from yaml import Loader
 import threading
+import ClassPrison
 
 running = True
 hour, minute, seconds = 11, 30, 0
@@ -104,7 +105,8 @@ def upgradePrison():
             abc = input(f"Le prix est de 10€. Vous avez {str(getDataYML('resources', 'money'))}€,"
                         f"souhaitez vous l'améliorer ? (y/n)")
             if abc == "y" or abc == "yes":
-                pay(10)
+                prison = ClassPrison.Prison()
+                prison.addCellule(10)
                 return "Amélioration effectuer"
 
 
@@ -130,7 +132,11 @@ def init_yml():
                 "   cuisinier: 2\n"
                 "   agent: 3\n"
                 "   cellules: 1\n"
-                "   max-cellules: 8\n")
+                "   max-cellules: 8\n"
+                "time:\n"
+                "   hour: 20\n"
+                "   minute: 31\n"
+                "   seconds: 0\n")
         return "YML file created"
 
 
