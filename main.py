@@ -4,53 +4,9 @@ import yaml
 from yaml import Loader
 import threading
 import ClassPrison
+from TextFormat import textColor
 
 running = True
-hour, minute, seconds = 11, 30, 0
-
-impot = 160
-revenue_par_detenus = 80
-
-src_data = "data/data.yml"
-
-
-def mevTimer():
-    file = open(src_data, 'r')
-    data = yaml.load(file, Loader=Loader)
-    while True:
-        data['time']['seconds'] += 1
-        time.sleep(0.10)
-        with open(src_data, 'w') as yaml_file:
-            yaml_file.write(yaml.dump(data))
-        if data['time']['seconds'] > 59:
-            data['time']['minute'] += 1
-            data['time']['seconds'] = 0
-            with open(src_data, 'w') as yaml_file:
-                yaml_file.write(yaml.dump(data))
-        elif data['time']['minute'] > 59:
-            data['time']['hour'] += 1
-            data['time']['minute'] = 0
-            with open(src_data, 'w') as yaml_file:
-                yaml_file.write(yaml.dump(data))
-        elif data['time']['hour'] > 23:
-            data['time']['hour'] = 0
-            with open(src_data, 'w') as yaml_file:
-                yaml_file.write(yaml.dump(data))
-        time.sleep(60)
-        # print('[' + str(hour) + ':' + str(minute) + ']')
-
-
-def routine():
-    if hour == 12:
-        return "Midi"
-    elif hour == 7:
-        return "Debut de la matiné"
-    elif hour == 19 and minute == 30:
-        return "Diner"
-    elif hour == 0:
-        return "Bonne nuit"
-    else:
-        return "Libre"
 
 
 def getDataYML(key, value):
@@ -74,17 +30,60 @@ def earn(price):
     with open(src_data, 'w') as yaml_file:
         yaml_file.write(yaml.dump(data))
 
+impot = 160
+revenue_par_detenus = 80 * int(getDataYML('prison', 'detenus'))
+
+
+src_data = "data/data.yml"
+
+
+def mevTimer():
+    file = open(src_data, 'r')
+    data = yaml.load(file, Loader=Loader)
+    while True:
+        data['time']['seconds'] += 1
+        time.sleep(0.10)
+        with open(src_data, 'w') as yaml_file:
+            yaml_file.write(yaml.dump(data))
+        if data['time']['seconds'] > 59:
+            data['time']['minute'] += 1
+            data['time']['seconds'] = 0
+            with open(src_data, 'w') as yaml_file:
+                yaml_file.write(yaml.dump(data))
+        elif data['time']['minute'] > 59:
+            data['time']['hour'] += 1
+            data['time']['minute'] = 0
+            data['resources']['money'] += revenue_par_detenus
+            print(textColor.GREEN + "Vous avez gagner " + str(revenue_par_detenus) + "€" + textColor.END)
+            with open(src_data, 'w') as yaml_file:
+                yaml_file.write(yaml.dump(data))
+        elif data['time']['hour'] > 23:
+            data['time']['hour'] = 0
+            with open(src_data, 'w') as yaml_file:
+                yaml_file.write(yaml.dump(data))
+        time.sleep(60)
+        # print('[' + str(hour) + ':' + str(minute) + ']')
+
+
+def routine():
+    file = open(src_data, 'r')
+    data = yaml.load(file, Loader=Loader)
+    if 12 <= data['time']['hour'] <= 13:
+        return "Midi"
+    elif 7 <= data['time']['hour'] <= 8:
+        return "Debut de la matiné"
+    elif 19 <= data['time']['hour'] <= 20:
+        return "Diner"
+    elif data['time']['hour'] > 23:
+        return "Bonne nuit"
+    else:
+        return "Libre"
+
 
 def getResources():
-    a = input("Que voulez-vous savoir ? (Eau = 1 / Elec = 2 / Argent = 3)")
-    if a == "1" or a == "Eau":
-        return "Litre d'eau: " + str(getDataYML('resources', "water")) + "L"
-
-    elif a == "2" or a == "Elec":
-        return "Electricité: " + str(getDataYML('resources', "volt")) + "V"
-
-    elif a == "Argent" or a == "3":
-        return "Mon argent:" + str(getDataYML('resources', "money")) + "€"
+    return textColor.BLUE + "Litre d'eau: " + str(getDataYML('resources', "water")) + "L \n" + \
+           textColor.YELLOW + "Electricité: " + str(getDataYML('resources', "volt")) + "V \n" + \
+           textColor.GREEN + "Mon argent: " + str(getDataYML('resources', "money")) + "€" + textColor.END
 
 
 def getInfoPrison():
@@ -100,14 +99,15 @@ def getInfoPrison():
 def upgradePrison():
     a = input("Que souhaitez-vous améliorer ? (Ajouter une cellule = 1 / Infirmerie = 2 / Sanitaire = 3)")
     if a == "1":
-        ab = input("Quel cellule ? ({0})".format(str(getDataYML('prison', 'cellules'))))
-        if ab == str(getDataYML('prison', 'cellules')):
+        if getDataYML('prison', 'cellules') > getDataYML('prison', 'max-cellules'):
             abc = input(f"Le prix est de 10€. Vous avez {str(getDataYML('resources', 'money'))}€,"
                         f"souhaitez vous l'améliorer ? (y/n)")
             if abc == "y" or abc == "yes":
                 prison = ClassPrison.Prison()
-                prison.addCellule(10)
+                prison.addCellule(1000)
                 return "Amélioration effectuer"
+        else:
+            return textColor.RED + "Vous avez atteint le nombre maximal de cellules dans cette prison." + textColor.END
 
 
 def helpCmd():
@@ -137,17 +137,15 @@ def init_yml():
                 "   hour: 20\n"
                 "   minute: 31\n"
                 "   seconds: 0\n")
-        return "YML file created"
+        return textColor.YELLOW + "Warning : No YML files were found. New file created." + textColor.END
 
 
 if __name__ == '__main__':
-    timer_thread = threading.Thread(target=mevTimer)
-    timer_thread.start()
     if os.path.getsize("data/data.yml") == 0:
         print(init_yml())
-    else:
-        print("YML file loaded")
     while running:
+        timer_thread = threading.Thread(target=mevTimer)
+        timer_thread.start()
         cmd = input(str(getDataYML('resources', "money")) + "€ | " + str(getDataYML('resources', "water")) + "L | "
                     + str(getDataYML('resources', "volt")) + "V | [" + str(getDataYML('time', 'hour')) + ":"
                     + str(getDataYML('time', 'minute')) + "] |" + routine() + "|" + " #>")
@@ -160,4 +158,4 @@ if __name__ == '__main__':
         if cmd == "/up-prison" or cmd == "/up":
             print(upgradePrison())
         else:
-            print("Command not found, try /help")
+            print(textColor.HEADER + "Command not found, try /help" + textColor.END)
