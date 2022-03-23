@@ -5,6 +5,7 @@ from yaml import Loader
 import threading
 import ClassPrison
 from TextFormat import textColor
+from Time import Time
 
 running = True
 
@@ -35,49 +36,6 @@ revenue_par_detenus = 80 * int(getDataYML('prison', 'detenus'))
 
 
 src_data = "data/data.yml"
-
-
-def mevTimer():
-    file = open(src_data, 'r')
-    data = yaml.load(file, Loader=Loader)
-    while True:
-        data['time']['seconds'] += 1
-        time.sleep(0.10)
-        with open(src_data, 'w') as yaml_file:
-            yaml_file.write(yaml.dump(data))
-        if data['time']['seconds'] > 59:
-            data['time']['minute'] += 1
-            data['time']['seconds'] = 0
-            with open(src_data, 'w') as yaml_file:
-                yaml_file.write(yaml.dump(data))
-        elif data['time']['minute'] > 59:
-            data['time']['hour'] += 1
-            data['time']['minute'] = 0
-            data['resources']['money'] += revenue_par_detenus
-            print(textColor.GREEN + "Vous avez gagner " + str(revenue_par_detenus) + "€" + textColor.END)
-            with open(src_data, 'w') as yaml_file:
-                yaml_file.write(yaml.dump(data))
-        elif data['time']['hour'] > 23:
-            data['time']['hour'] = 0
-            with open(src_data, 'w') as yaml_file:
-                yaml_file.write(yaml.dump(data))
-        time.sleep(60)
-        # print('[' + str(hour) + ':' + str(minute) + ']')
-
-
-def routine():
-    file = open(src_data, 'r')
-    data = yaml.load(file, Loader=Loader)
-    if 12 <= data['time']['hour'] <= 13:
-        return "Midi"
-    elif 7 <= data['time']['hour'] <= 8:
-        return "Debut de la matiné"
-    elif 19 <= data['time']['hour'] <= 20:
-        return "Diner"
-    elif data['time']['hour'] > 23:
-        return "Bonne nuit"
-    else:
-        return "Libre"
 
 
 def getResources():
@@ -144,11 +102,11 @@ if __name__ == '__main__':
     if os.path.getsize("data/data.yml") == 0:
         print(init_yml())
     while running:
-        timer_thread = threading.Thread(target=mevTimer)
+        timer_thread = threading.Thread(target=Time.mevTimer)
         timer_thread.start()
         cmd = input(str(getDataYML('resources', "money")) + "€ | " + str(getDataYML('resources', "water")) + "L | "
                     + str(getDataYML('resources', "volt")) + "V | [" + str(getDataYML('time', 'hour')) + ":"
-                    + str(getDataYML('time', 'minute')) + "] |" + routine() + "|" + " #>")
+                    + str(getDataYML('time', 'minute')) + "] |" + Time.routine() + "|" + " #>")
         if cmd == "/res" or cmd == "/resources" or cmd == "/rs":
             print(getResources())
         if cmd == "/help":
