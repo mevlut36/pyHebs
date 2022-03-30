@@ -1,4 +1,4 @@
-from main import getDataYML
+from main import getDataYML, upgradePrison
 import yaml
 from yaml import Loader
 
@@ -102,3 +102,33 @@ class Prison:
         else:
             return "You don't have cleaner for lay off"
 
+    def upgradePrison(self, element, price):
+        if element == "cellule":
+            if getDataYML("prison", "cellule-level") < getDataYML("prison", "cellule-level-max"):
+                if getDataYML("resources", "money") >= price:
+                    file = open(src_data, 'r')
+                    data = yaml.load(file, Loader=Loader)
+                    data['resources']['money'] -= price
+                    data['prison']['cellule-level'] += 1
+                    with open(src_data, 'w') as yaml_file:
+                        yaml_file.write(yaml.dump(data))
+                    return "Cell upgraded."
+                else:
+                    return "You don't have enough money."
+            else:
+                return "You have reached the maximum level of the cells."
+
+        if element == "cuisine":
+            if getDataYML("prison", "cuisine-level") < getDataYML("prison", "cuisine-level-max"):
+                if getDataYML("resources", "money") >= price:
+                    file = open(src_data, 'r')
+                    data = yaml.load(file, Loader=Loader)
+                    data['resources']['money'] -= price
+                    data['prison']['cuisine-level'] += 1
+                    with open(src_data, 'w') as yaml_file:
+                        yaml_file.write(yaml.dump(data))
+                    return "Kitchen upgraded."
+                else:
+                    return "You don't have enough money."
+            else:
+                return "You have reached the maximum level of the kitchen."
