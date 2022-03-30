@@ -1,5 +1,4 @@
 import os
-import time
 import yaml
 from yaml import Loader
 import threading
@@ -8,6 +7,47 @@ from TextFormat import textColor
 from Time import Time
 
 running = True
+
+
+def init_yml():
+    if os.path.getsize("data/data.yml") == 0:
+        f = open("data/data.yml", "a")
+        f.write("prison:\n"
+                "   agents: 3\n"
+                "   cellule-level: 1\n"
+                "   cellule-level-max: 1\n"
+                "   cellules: 7\n"
+                "   cour-prison: 1\n"
+                "   cour-prison-max: 1\n"
+                "   cuisine-level: 1\n"
+                "   cuisine-level-max: 1\n"
+                "   cuisiniers: 2\n"
+                "   detenus: 2\n"
+                "   gardiens: 3\n"
+                "   generateur-level: 1\n"
+                "   generateur-level-max: 1\n"
+                "   infirmerie-level: 1\n"
+                "   infirmerie-level-max: 1\n"
+                "   max-agents: 6\n"
+                "   max-cellules: 8\n"
+                "   max-cuisiniers: 8\n"
+                "   max-gardiens: 20\n"
+                "   pompe-eau-level: 1\n"
+                "   pompe-eau-level-max: 1\n"
+                "   protection-gardien: 1\n"
+                "   protection-gardien-max: 1\n"
+                "resources:\n"
+                "   money: 18470\n"
+                "   volt: 120\n"
+                "   water: 100\n"
+                "time:\n"
+                "   hour: 12\n"
+                "   minute: 0\n"
+                "   seconds: 34\n")
+        return textColor.YELLOW + "Warning : No YML files were found. New file created." + textColor.END
+
+if os.path.getsize("data/data.yml") == 0:
+    print(init_yml())
 
 
 def getDataYML(key, value):
@@ -31,9 +71,9 @@ def earn(price):
     with open(src_data, 'w') as yaml_file:
         yaml_file.write(yaml.dump(data))
 
+
 impot = 160
 revenue_par_detenus = 80 * int(getDataYML('prison', 'detenus'))
-
 
 src_data = "data/data.yml"
 
@@ -77,30 +117,7 @@ def helpCmd():
            "<------------------->"
 
 
-def init_yml():
-    if os.path.getsize("data/data.yml") == 0:
-        f = open("data/data.yml", "a")
-        f.write("resources:\n"
-                "   money: 2000\n"
-                "   water: 100\n"
-                "   volt: 120\n"
-                "prison:\n"
-                "   detenus: 2\n"
-                "   gardiens: 5\n"
-                "   cuisinier: 2\n"
-                "   agent: 3\n"
-                "   cellules: 1\n"
-                "   max-cellules: 8\n"
-                "time:\n"
-                "   hour: 20\n"
-                "   minute: 31\n"
-                "   seconds: 0\n")
-        return textColor.YELLOW + "Warning : No YML files were found. New file created." + textColor.END
-
-
 if __name__ == '__main__':
-    if os.path.getsize("data/data.yml") == 0:
-        print(init_yml())
     while running:
         timer_thread = threading.Thread(target=Time.mevTimer)
         timer_thread.start()
