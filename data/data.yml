@@ -1,18 +1,32 @@
 prison:
   agents: 3
-  cellules: 4
+  cellule-level: 1
+  cellule-level-max: 1
+  cellules: 7
+  cour-prison: 1
+  cour-prison-max: 1
+  cuisine-level: 1
+  cuisine-level-max: 1
   cuisiniers: 2
   detenus: 2
   gardiens: 3
+  generateur-level: 1
+  generateur-level-max: 1
+  infirmerie-level: 1
+  infirmerie-level-max: 1
   max-agents: 6
   max-cellules: 8
   max-cuisiniers: 8
   max-gardiens: 20
+  pompe-eau-level: 1
+  pompe-eau-level-max: 1
+  protection-gardien: 1
+  protection-gardien-max: 1
 resources:
-  money: 17890
+  money: 18470
   volt: 120
   water: 100
 time:
-  hour: 20
-  minute: 31
-  seconds: 10
+  hour: 12
+  minute: 0
+  seconds: 36
